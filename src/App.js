@@ -15,8 +15,31 @@ const theme = {
   userBubbleColor: "#fff",
   userFontColor: "#4a4a4a",
 };
+const queryUrl = "http://20.244.97.59:8000/v1/query";
+const chatUrl = "http://20.244.97.59:8000/v1/chat";
 
-// Custom component to process the user's query
+const handleApiCall = async (url, body) => {
+  try {
+    const response = await axios.post(url, body);
+    let message = response.data.output.text;
+
+    if (typeof message !== "string") {
+      console.error("API response text is not a string:", message);
+      return "Sorry, I couldn't find any information.";
+    }
+
+    if (url === chatUrl) {
+      message = message.replace(/Source:.*$/, "");
+    }
+
+    return message;
+  } catch (error) {
+    console.error("API call error:", error);
+    return "Sorry, I couldn't find any information.";
+  }
+};
+
+// Custom component to process the user's query for option 1
 const ProcessQuery = ({ steps, triggerNextStep }) => {
   const [loading, setLoading] = useState(true);
   const [responseMessage, setResponseMessage] = useState("");
@@ -34,19 +57,39 @@ const ProcessQuery = ({ steps, triggerNextStep }) => {
       },
     };
 
-    axios
-      .post("http://20.244.97.59:8000/v1/query", queryData)
-      .then((response) => {
-        const result = response.data.output.text;
-        setResponseMessage(result);
-        setLoading(false);
-        triggerNextStep();
-      })
-      .catch((error) => {
-        setResponseMessage("There was an error processing your request.");
-        setLoading(false);
-        triggerNextStep();
-      });
+    handleApiCall(queryUrl, queryData).then((result) => {
+      setResponseMessage(result);
+      setLoading(false);
+      triggerNextStep();
+    });
+  }, [queryText, triggerNextStep]);
+
+  return <div>{loading ? "Processing your query..." : responseMessage}</div>;
+};
+
+// Custom component to process the user's query for option 3
+const ProcessGeneralQuery = ({ steps, triggerNextStep }) => {
+  const [loading, setLoading] = useState(true);
+  const [responseMessage, setResponseMessage] = useState("");
+  const queryText = steps.chatInput.value;
+
+  useEffect(() => {
+    const chatData = {
+      input: {
+        language: "en",
+        text: queryText,
+        context: "citizen",
+      },
+      output: {
+        format: "text",
+      },
+    };
+
+    handleApiCall(chatUrl, chatData).then((result) => {
+      setResponseMessage(result);
+      setLoading(false);
+      triggerNextStep();
+    });
   }, [queryText, triggerNextStep]);
 
   return <div>{loading ? "Processing your query..." : responseMessage}</div>;
@@ -113,24 +156,12 @@ const steps = [
     id: "processQuery",
     component: <ProcessQuery />,
 
-    trigger: "continuePrompt",
+    trigger: "continueQuery",
   },
   {
     id: "responseMessage",
     message: ({ previousValue }) => previousValue,
-    trigger: "continuePrompt",
-  },
-  {
-    id: "continuePrompt",
-    message: "Do you want to continue or go to the main menu?",
-    trigger: "continueOptions",
-  },
-  {
-    id: "continueOptions",
-    options: [
-      { value: "continue", label: "Continue", trigger: "userInput" },
-      { value: "mainMenu", label: "Main Menu", trigger: "3" },
-    ],
+    trigger: "continueQuery",
   },
   {
     id: "6",
@@ -141,14 +172,48 @@ const steps = [
   {
     id: "7",
     message:
-      "You selected to ask general queries related to the portal and schemes.",
-    end: true,
+      "You selected to ask general queries related to the portal and schemes. Please wait while we process your query...",
+    trigger: "chatInput",
+  },
+  {
+    id: "chatInput",
+    user: true,
+    trigger: "processGeneralQuery",
+  },
+  {
+    id: "processGeneralQuery",
+    component: <ProcessGeneralQuery />,
+    trigger: "continueChat",
   },
   {
     id: "8",
     message:
       "You selected to discover your scheme eligibility by answering a few quick questions.",
     end: true,
+  },
+  {
+    id: "continueQuery",
+    message: "Do you want to continue or go to the main menu?",
+    trigger: "queryOptions",
+  },
+  {
+    id: "queryOptions",
+    options: [
+      { value: "continue", label: "Continue", trigger: "userInput" },
+      { value: "mainMenu", label: "Main Menu", trigger: "3" },
+    ],
+  },
+  {
+    id: "continueChat",
+    message: "Do you want to continue or go to the main menu?",
+    trigger: "chatOptions",
+  },
+  {
+    id: "chatOptions",
+    options: [
+      { value: "continue", label: "Continue", trigger: "chatInput" },
+      { value: "mainMenu", label: "Main Menu", trigger: "3" },
+    ],
   },
 ];
 
