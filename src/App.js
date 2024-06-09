@@ -98,6 +98,18 @@ const ProcessGeneralQuery = ({ steps, triggerNextStep }) => {
 // Updated steps array
 const steps = [
   {
+    id: "start",
+    message: "Johar 🙏 ,To start kindly choose your Preferred Language:",
+    trigger: "languageOptions",
+  },
+  {
+    id: "languageOptions",
+    options: [
+      { value: "english", label: "English", trigger: "1" },
+      { value: "हिन्दी", label: "हिन्दी", trigger: "1" },
+    ],
+  },
+  {
     id: "1",
     message:
       "Johar 🙏 , I'm UDDP ChatBot and I am here to help you regarding information about the Resident Portal as well as any scheme related query.",
@@ -202,6 +214,7 @@ const steps = [
     options: [
       { value: "continue", label: "Continue", trigger: "userInput" },
       { value: "mainMenu", label: "Main Menu", trigger: "3" },
+      { value: "language", label: "language", trigger: "start" },
     ],
   },
   {
@@ -214,6 +227,7 @@ const steps = [
     options: [
       { value: "continue", label: "Continue", trigger: "chatInput" },
       { value: "mainMenu", label: "Main Menu", trigger: "3" },
+      { value: "language", label: "language", trigger: "start" },
     ],
   },
 ];
