@@ -122,29 +122,29 @@ const steps = [
         label: "Click here to know your scheme eligibility by typing a query",
         trigger: "5",
       },
-      {
-        value: 2,
-        label:
-          "Click here to know your scheme eligibility by providing your eligibility criteria",
-        trigger: "6",
-      },
+      // {
+      //   value: 2,
+      //   label:
+      //     "Click here to know your scheme eligibility by providing your eligibility criteria",
+      //   trigger: "6",
+      // },
       {
         value: 3,
         label: "Click here for general queries related to portal and schemes",
         trigger: "7",
       },
-      {
-        value: 4,
-        label:
-          "Discover your scheme eligibility by answering a few quick questions. Click here to get started!",
-        trigger: "8",
-      },
+      // {
+      //   value: 4,
+      //   label:
+      //     "Discover your scheme eligibility by answering a few quick questions. Click here to get started!",
+      //   trigger: "8",
+      // },
     ],
   },
   {
     id: "5",
     message:
-      "You selected to know your scheme eligibility by typing a query. Please type your query below:",
+      "please type your query in the below input box. e.g - (I am 61 years old female construction worker belonging to scheduled caste category. what are my eligible schemes?)",
     trigger: "userInput",
   },
   {
@@ -155,7 +155,7 @@ const steps = [
   {
     id: "processQuery",
     component: <ProcessQuery />,
-
+    // asMessage: true,
     trigger: "continueQuery",
   },
   {
@@ -163,16 +163,16 @@ const steps = [
     message: ({ previousValue }) => previousValue,
     trigger: "continueQuery",
   },
-  {
-    id: "6",
-    message:
-      "You selected to know your scheme eligibility by providing your eligibility criteria.",
-    end: true,
-  },
+  // {
+  //   id: "6",
+  //   message:
+  //     "You selected to know your scheme eligibility by providing your eligibility criteria.",
+  //   end: true,
+  // },
   {
     id: "7",
     message:
-      "You selected to ask general queries related to the portal and schemes. Please wait while we process your query...",
+      "please type your query in the below input box. e.g -\n1) What is maternity scheme\n2) what is eligible criteria of maternity\n3) I have 3 children. Am I eligible?",
     trigger: "chatInput",
   },
   {
@@ -183,14 +183,15 @@ const steps = [
   {
     id: "processGeneralQuery",
     component: <ProcessGeneralQuery />,
+    asMessage: true,
     trigger: "continueChat",
   },
-  {
-    id: "8",
-    message:
-      "You selected to discover your scheme eligibility by answering a few quick questions.",
-    end: true,
-  },
+  // {
+  //   id: "8",
+  //   message:
+  //     "You selected to discover your scheme eligibility by answering a few quick questions.",
+  //   end: true,
+  // },
   {
     id: "continueQuery",
     message: "Do you want to continue or go to the main menu?",
@@ -223,7 +224,13 @@ const UDDPChatBot = () => (
     <ChatBot
       steps={steps}
       bubbleOptionStyle={{ backgroundColor: "white", color: "black" }}
+      speechSynthesis={{ enable: true, lang: "hi" }}
+      recognitionLang="hi"
+      recognitionEnable={true}
       floating={true}
+      width="400px"
+      height="550px"
+      headerTitle="UDDP chatbot"
     />
   </ThemeProvider>
 );
