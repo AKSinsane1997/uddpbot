@@ -51,6 +51,40 @@ const App = () => {
   };
 
   // Custom component to process the user's query for option 1
+  const SchemesList = ({ schemes }) => {
+    const splitCharacter = "\n";
+
+    const filteredSchemes = schemes
+      .split(splitCharacter)
+      .map((scheme, index) => {
+        if (index === 0) {
+          return null;
+        }
+        return `${scheme.trim().replace(/^-/, "")}`;
+      })
+      .filter(
+        (scheme) =>
+          scheme !== null &&
+          !scheme.includes(".txt") &&
+          scheme !== "Sona-Sobran Dhoti-Saree Distribution Scheme"
+      );
+
+    return (
+      <div>
+        <p>Here are the schemes you are eligible for:</p>
+        {filteredSchemes.map((scheme, index) => (
+          <button
+            className="schemeButton"
+            key={index}
+            style={{ display: "block", margin: "10px 0" }}
+          >
+            {index + 1}. {scheme}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   const ProcessQuery = ({ steps, triggerNextStep }) => {
     const [loading, setLoading] = useState(true);
     const [responseMessage, setResponseMessage] = useState("");
@@ -75,9 +109,12 @@ const App = () => {
       });
     }, [queryText, triggerNextStep]);
 
-    return <div>{loading ? "Processing your query..." : responseMessage}</div>;
-  };
+    if (loading) {
+      return <div>Processing your query...</div>;
+    }
 
+    return <SchemesList schemes={responseMessage} />;
+  };
   // Custom component to process the user's query for option 3
   const ProcessGeneralQuery = ({ steps, triggerNextStep }) => {
     const [loading, setLoading] = useState(true);

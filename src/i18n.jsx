@@ -36,6 +36,7 @@ const resources = {
       continue: "continue",
       menu: "main menu",
       lang: "language",
+      processing: "Processing your query...",
     },
   },
   hi: {
@@ -72,6 +73,7 @@ const resources = {
       continue: "जारी रखना",
       menu: "मुख्य मेनू",
       lang: "भाषा",
+      processing: "आपकी क्वेरी संसाधित की जा रही है...",
     },
   },
 };
